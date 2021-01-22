@@ -1,0 +1,53 @@
+<div id="app">
+<p @click="add">{{counter}}</p>
+<p>{{ doubleCounter }}</p>
+<p>{{ anotherChild }}</p>
+
+</div>
+<script src="../dist/vue.global.js">
+
+</script>
+<script>
+const {createApp, reactive, computed, ref, toRefs, onMounted, watch, watchEffect} = Vue
+
+// 业务相关逻辑
+function useCounter(){
+  // 1.reactive
+    const state = reactive({
+      counter: 0,
+      doubleCounter: computed(() => state.counter * 2)
+    })
+
+    // 2.methods
+     const add = () =>{
+      state.counter++
+    }
+
+    // 挂载就是执行 按顺序执行
+    onMounted(() => {
+      console.log('useCounter 里的mounted')
+    })
+
+    watch(state.doubleCounter, (curr, prev) => console.log('dobulecounter 发生了变化'))
+    watchEffect( () => { console.log('dobulecounter 发生了变化', state.doubleCounter)})
+
+    return {...toRefs(state), add}
+}
+
+createApp({
+  setup(props, {attrs, emit, slots}){
+    // 直接使用可复用的逻辑
+    const {counter, doubleCounter, add} = useCounter()
+
+    // 3.单根响应式对象Ref
+    const anotherChild = ref(0)
+    // 修改Ref需要使用.val
+    anotherChild.val++
+
+    // 渲染函数统一暴露上下文
+    return {counter, doubleCounter, add, anotherChild}
+  }
+
+ 
+}).mount('#app')
+</script>

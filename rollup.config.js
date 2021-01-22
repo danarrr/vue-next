@@ -17,7 +17,7 @@ const packageOptions = pkg.buildOptions || {}
 
 // ensure TS checks only once for each build
 let hasTSChecked = false
-
+// 打包格式的设置
 const outputConfigs = {
   'esm-bundler': {
     file: resolve(`dist/${name}.esm-bundler.js`),
@@ -113,7 +113,7 @@ function createConfig(format, output, plugins = []) {
   // it also seems to run into weird issues when checking multiple times
   // during a single build.
   hasTSChecked = true
-
+  // 默认入口文件是index
   const entryFile = /runtime$/.test(format) ? `src/runtime.ts` : `src/index.ts`
 
   const external =

@@ -1,0 +1,77 @@
+<div id="app">
+</div>
+
+<script>
+const createAppAPI = (render) => {
+  return function createApp(rootComponent){
+    const app = {
+      mount(rootContainer){
+        // 1. vnode
+        const vnode = {
+          tag: rootComponent,
+        }
+        // 2. render
+        render(vnode, rootContainer)
+      }
+    }
+    return app
+  }
+}
+const createRender = ({querySelector, createElement, insert}) => {
+  const render = (vnode, container) => {
+    patch(container._vnode || null, vnode, container)
+    container._vnode = vnode
+  }
+
+  const patch = (n1, n2, container) => {
+    // 根组件配置
+    const rootComponent = n2.tag
+    const ctx = rootComponent.data()
+    const vnode = rootComponent.render.call(ctx)
+
+    // vnode => dom
+    const parent = querySelector(container)
+    const child = createElement(vnode.tag)
+    
+    if (typeof vnode.children === 'string'){
+      child.textContent = vnode.children
+    } else {
+      // 递归子child
+    }
+
+    insert(child, parent)
+  }
+
+  // 返回一个渲染器 
+  return {
+    render,
+    createApp: createAppAPI(render),
+  }
+}
+
+const renderer = createRender({
+  querySelector(sel){ return document.querySelector(sel) },
+  createElement(tag){ return document.createElement(tag) },
+  insert(child, parent){ return parent.appendChild(child) }
+})
+
+const  Vue = {
+  createApp(options){
+    return renderer.createApp(options)
+  }
+}
+
+Vue.createApp({
+  data(){
+    return {
+      counter: 0,
+    }
+  },
+  render(){
+    return {
+      tag: 'p',
+      children: this.counter+''
+    }
+  }
+}).mount('#app')
+</script>

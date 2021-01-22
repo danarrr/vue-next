@@ -539,6 +539,7 @@ function setupStatefulComponent(
   instance: ComponentInternalInstance,
   isSSR: boolean
 ) {
+  // 根组件配置 对象
   const Component = instance.type as ComponentOptions
 
   if (__DEV__) {
@@ -562,6 +563,7 @@ function setupStatefulComponent(
   instance.accessCache = Object.create(null)
   // 1. create public instance / render proxy
   // also mark it raw so it's never observed
+  // 渲染函数的上下文
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers)
   if (__DEV__) {
     exposePropsOnRenderContext(instance)
@@ -702,6 +704,7 @@ function finishComponentSetup(
   }
 
   // support for 2.x options
+  // 处理其他用户选项
   if (__FEATURE_OPTIONS_API__) {
     currentInstance = instance
     pauseTracking()
